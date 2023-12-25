@@ -1,0 +1,150 @@
+openapi: 3.0.1
+info:
+  title: Greeting Example
+  description: Simple App
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /api/greetings/{greetingId}:
+    get:
+      tags:
+      - greeting-controller
+      operationId: greetingById
+      parameters:
+      - name: greetingId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGreeting'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: string
+    put:
+      tags:
+      - greeting-controller
+      operationId: updateGreetingById
+      parameters:
+      - name: greetingId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGreetingPayload'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGreeting'
+  /api/greetings:
+    get:
+      tags:
+      - greeting-controller
+      operationId: greetings
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseListGreetingSummary'
+  /api/greetings/search:
+    get:
+      tags:
+      - greeting-controller
+      operationId: greetings_1
+      parameters:
+      - name: name
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseListGreetingSummary'
+components:
+  schemas:
+    UpdateGreetingPayload:
+      required:
+      - name
+      - phrase
+      type: object
+      properties:
+        name:
+          type: string
+        phrase:
+          type: string
+    ApiResponseGreeting:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Greeting'
+    Greeting:
+      required:
+      - greetingType
+      - id
+      - name
+      - phrase
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        phrase:
+          type: string
+        name:
+          type: string
+        greetingType:
+          type: string
+          enum:
+          - FORMAL
+          - PERSONAL
+          - CASUAL
+          - PROFESSIONAL
+    ApiResponseListGreetingSummary:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/GreetingSummary'
+    GreetingSummary:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          maxLength: 1024
+          minLength: 0
+          type: string
